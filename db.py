@@ -12,10 +12,13 @@ cursor = connection.cursor()
 
 cursor.execute("USE company_db;")
 
+# name= ''
+# age = 'f'
+
 cursor.execute("""
     INSERT INTO staff (full_name, age, salary, contact)
     VALUE (%s, %s, %s, %s)
-""", ('ali', 12, 1200.90, '123456'))
+""", (name, age, oylik, tel))
 connection.commit()
 
 cursor.execute("SELECT * FROM staff;")
