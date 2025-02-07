@@ -43,6 +43,12 @@ class DB:
         )
         self.__commit()
 
+    def get_studetns(self) -> list[tuple]:
+        self.__cursor.execute("""
+            SELECT * FROM students
+        """)
+        return self.__cursor.fetchall()
+
     def __create_course_table(self):
         pass
 

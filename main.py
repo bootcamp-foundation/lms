@@ -1,3 +1,4 @@
+from pprint import pprint
 from db import DB
 import settings
 
@@ -10,6 +11,11 @@ db = DB(
     db_name=settings.DB_NAME
 )
 
-db.insert_student('Vali', 20)
+
+students = db.get_studetns()
+
+for student in students:
+    print(student)
+    
 
 db.close()
