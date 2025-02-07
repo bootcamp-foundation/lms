@@ -1,33 +1,58 @@
 import mysql.connector
-import settings
 
 
-connection = mysql.connector.connect(
-    host=settings.host,
-    port=settings.port,
-    user=settings.user, 
-    password=settings.password
-)
-cursor = connection.cursor()
+class DB:
 
-cursor.execute("USE company_db;")
+    def __init__(self, host: str, port: str, user: str, password: str, db_name: str):
+        self.__connection = mysql.connector.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password
+        )
+        if self.is_connected():
+            self.__cursor = self.__connection.cursor()
 
-# name= ''
-# age = 'f'
+            self.__cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
+            self.__cursor.execute(f"USE {db_name}")
 
-cursor.execute("""
-    INSERT INTO staff (full_name, age, salary, contact)
-    VALUE (%s, %s, %s, %s)
-""", (name, age, oylik, tel))
-connection.commit()
+            self.__start()
+        else:
+            raise mysql.connector.Error("Connection Error")
 
-cursor.execute("SELECT * FROM staff;")
+    def __start(self):
+        self.__create_student_table()
+        self.__create_course_table()
 
+    def __create_student_table(self):
+        self.__cursor.execute("""
+            CREATE TABLE IF NOT EXISTS students (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(64),
+                age INT
+            );
+        """)
+        self.__commit()
 
-employees = cursor.fetchall()
-for employee in employees:
-    print(employee)
+    def insert_student(self, name: str, age: int):
+        self.__cursor.execute("""
+            INSERT INTO students (name, age)
+            VALUES (%s, %s)
+        """,
+        (name, age)
+        )
+        self.__commit()
 
-cursor.close()
-connection.close()
+    def __create_course_table(self):
+        pass
+
+    def __commit(self):
+        self.__connection.commit()
+
+    def is_connected(self) -> bool:
+        return self.__connection.is_connected()
+
+    def close(self):
+        self.__cursor.close()
+        self.__connection.close()
 
